@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .flip {
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        class TileCtn {
+            constructor(size, v, h, bg_image){
+                this.size = size;
+                this.vertical = v;
+                this.horizon = h;
+                this.totalNumberOfTiles = v * h;
+                this.bg = bg_image;
+                this.generateDOM();
+                this.addEventListener();
+            }
+
+            generateDOM(){
+                let tilesCtn = this.tilesCtn = document.createElement('div');
+                tilesCtn.style = `width: ${this.size.width}px;height: ${this.size.height}px;background-color:#eee;margin:100px auto;display:flex;flex-wrap:wrap;perspective: 1000px;`;
+                for (let i = 0; i < this.totalNumberOfTiles; i++) {
+                    let tile = document.createElement('div');
+                    tile.id = `tile_${i}`;
+                    tile.style = `box-sizing: border-box;width: ${this.size.width / this.horizon}px;height: ${this.size.height / this.vertical}px;position:relative;transition: transform 1s;transform-style: preserve-3d;`;
+
+                    let tileFront = document.createElement('div');
+                    let tileBack = document.createElement('div');
+                    let bgVerticalOffset,bgHorizonOffset;
+
+                    bgHorizonOffset = (i % this.vertical) * (this.size.width / this.horizon);
+                    bgVerticalOffset = parseInt(i / this.horizon) * (this.size.height / this.vertical);
+
+
+
+                    tileFront.style = `position: absolute;width:100%;height:100%;background-image:url(${this.bg});background-size:${this.size.width}px ${this.size.height}px;background-repeat:no-repeat;background-position: ${-bgHorizonOffset}px ${-bgVerticalOffset}px;backface-visibility: hidden;`;
+
+                    tileBack.style = `position: absolute;width:100%;height:100%;background-color:#fff;backface-visibility: hidden;transform: rotateY(180deg);`;
+                    tile.appendChild(tileFront)
+                    tile.appendChild(tileBack)
+                    tilesCtn.appendChild(tile);
+
+
+                }
+                document.body.appendChild(tilesCtn);
+            }
+
+            addEventListener(){
+                this.tilesCtn.addEventListener('click', (e)=>{
+                    let matches = e.target.parentNode.id.match(/tile_(\d)/)
+                    if(matches){
+                        let id = matches[0];
+                        e.target.parentNode.classList.toggle('flip');
+                    }
+                })
+            }
+
+        }
+
+        let tileCtn = new TileCtn({width: 500, height: 500}, 5, 5, './bg.png')
+    </script>
+</body>
+</html>
